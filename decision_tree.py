@@ -22,7 +22,7 @@ class MVP_classification(object):
         pos = self.le.fit_transform(self.data['Pos'])
         i = 0
         for index, row in self.data.iterrows():
-            feature = [pos[i], row['PTS_x'], row['TRB_x'], row['AST_x'], row['WS_x'], row['PER'], row['TOV']]
+            feature = [row['PTS_x'],row['WS_x'], row['STL_x'], row['BLK_x'],row['PER'], row['TOV']]
             i += 1
             self.X.append(feature)
             if row['Rank'] > 3:
@@ -42,9 +42,9 @@ class MVP_classification(object):
     def baseline(self):
         golden = []
         baseline_result = []
-        baseline_mvp = self.data.groupby('Year')['PTS_x'].nlargest(3)
+        baseline_mvp = self.data.groupby('Year')['WS_x'].nlargest(3)
         baseline_mvp = baseline_mvp.to_frame()
-        baseline_mvp = baseline_mvp.groupby('Year')['PTS_x'].min()
+        baseline_mvp = baseline_mvp.groupby('Year')['WS_x'].min()
         baseline_mvp = baseline_mvp.to_frame().reset_index(drop = False)
         #print baseline_mvp.query("Year == 2001")['PTS_x']
         for index, row in self.data.iterrows():
@@ -54,7 +54,7 @@ class MVP_classification(object):
                 golden.append(0)
             y = row["Year"]
             #print baseline_mvp.query("Year==@y").iloc[0]["PTS_x"]
-            if row['PTS_x'] >= baseline_mvp.query("Year == @y").iloc[0]['PTS_x']:
+            if row['WS_x'] >= baseline_mvp.query("Year == @y").iloc[0]['WS_x']:
                 baseline_result.append(1)
             else:
                 baseline_result.append(0)
